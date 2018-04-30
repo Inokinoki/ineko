@@ -109,9 +109,13 @@
 	float		DeltaX, DeltaY;
 	float		Length;
 	
+	NSScreen 	*screen 		= [NSScreen mainScreen];		// Get window Rect
+	float		windowWidth 	= [screen frame].size.width;
+	float		windowHeight 	= [screen frame].size.height;
+	
 	NSPoint p = [NSEvent mouseLocation];
-	MouseX = p.x;
-	MouseY = p.y;
+	MouseX = windowWidth - p.x;		// Set to mirror x position
+	MouseY = windowHeight - p.y;	// Set to mirror y position
 	
 	DeltaX = floor(MouseX - x - 16.0f);
 	DeltaY = floor(MouseY - y);
