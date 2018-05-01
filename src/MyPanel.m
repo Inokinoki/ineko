@@ -109,13 +109,34 @@
 	float		DeltaX, DeltaY;
 	float		Length;
 	
-	NSScreen 	*screen 		= [NSScreen mainScreen];		// Get window Rect
-	float		windowWidth 	= [screen frame].size.width;
-	float		windowHeight 	= [screen frame].size.height;
+	NSScreen 				*main_screen 	= [NSScreen mainScreen];	// Get window Rect
+	NSScreen				*screen 		= nil;						// Set current screen as nil
+	NSArray<NSScreen *> 	*screens 		= [NSScreen screens];		// Get all screens
 	
-	NSPoint p = [NSEvent mouseLocation];
-	MouseX = windowWidth - p.x;		// Set to mirror x position
-	MouseY = windowHeight - p.y;	// Set to mirror y position
+	NSPoint p = [NSEvent mouseLocation];	// Get mouse pointer
+	
+	for (NSScreen *s in screens) {
+		NSRect cocoaScreenFrame = [s frame];
+		// If pointer is in this screen
+		if ( p.x >= cocoaScreenFrame.origin.x && p.y >= cocoaScreenFrame.origin.y &&
+			p.x <= cocoaScreenFrame.origin.x + cocoaScreenFrame.size.width &&
+			p.y <= cocoaScreenFrame.origin.y + cocoaScreenFrame.size.height) {
+			screen = s;
+			break;
+		}
+	}
+	if (screen == nil) {
+		// If current screen not exist, set it to main_screen
+		screen = main_screen;
+	}
+	
+	float		windowWidth 	= [screen frame].size.width;
+	float		windowOriginX	= [screen frame].origin.x;
+	float		windowHeight 	= [screen frame].size.height;
+	float		windowOriginY	= [screen frame].origin.y;
+	
+	MouseX = windowOriginX + windowWidth - (p.x - windowOriginX);		// Set to mirror x position
+	MouseY = windowOriginY + windowHeight - (p.y - windowOriginY);		// Set to mirror y position
 	
 	DeltaX = floor(MouseX - x - 16.0f);
 	DeltaY = floor(MouseY - y);
